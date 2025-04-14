@@ -1,39 +1,62 @@
 
 # OpenBook Reader
 
-## Diagrama bloc hardware
-![Diagrama bloc hardware](./schema.png)
+```mermaid
+graph TD
+    
+    USB["USB-C Connector(ESD Protection)"] -->|5V| CHG["Battery Charger (MCP73831)"]
+    CHG -->|Charging| BATT["Li-Po Battery (2500mAh)"]
+    BATT --> LDO["3.3V LDO Regulator (XC6220)"]
+
+    LDO -->|3.3V| ESP["ESP32-C6-WROOM-1(MCU)"]
+
+    ESP -- I2C --> RTC["Real Time Clock(DS3231)"]
+    ESP -- I2C --> BME["Environmental Sensor(BME688)"]
+    ESP -- I2C --> FUEL["Battery Fuel Gauge(MAX17048)"]
+    ESP -- I2C --> QWIIC["Qwiic / Stemma QT"]
+
+    ESP -- SPI --> FLASH["External NOR Flash(W25Q512)"]
+    ESP -- SPI --> SD["MicroSD Card Slot"]
+    ESP -- SPI --> EPD_HEADER["E-Paper Display Header"]
+
+    EPD_HEADER --> EPD_DRIVER["EPD Driver Circuit"]
+    EPD_DRIVER --> EPD_POW["EPD HV Power"]
+    LDO --> EPD_HEADER
+
+    ESP -- GPIO --> BUTTONS["3x Buttons:BOOT, CHANGE, RESET"]
+
+    USB -- USB D+/D- --> ESP
+```
 
 ## Tabel Componente Principale (BOM)
 
 | Parts | Device | Check Prices | Datasheet |
 |-------|--------|--------------|-----------|
-| R2-USB, R2-USB1 | ESP32_WROVER_EAGLE-LTSPICE_RR0402 | - | - |
-| L1 | 744043680IND_4828-WE-TPC_WRE | - | - |
-| IC1 | BD5229G-TR | - | - |
-| SENSOR2 | ESP32_WROVER_BME680_BME680 | - | - |
-| BOOT_BUTTON, CHANGE_BUTTON, RESET_BUTTON | BUTTON_CUSYOMV1 | - | - |
-| C10_SUPERCAP | CPH3225A | [Link](https://www.snapeda.com/parts/CPH3225A/Seiko+Instruments/view-part/?ref=eda) | - |
-| U3 | DS3231SN# | [Link](https://www.snapeda.com/parts/DS3231SN%23/Analog+Devices/view-part/?ref=eda) | [Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ds3231.pdf) |
-| U2 | ESP32-C6-WROOM-1-N8 | [Link](https://www.snapeda.com/parts/ESP32-C6-WROOM-1-N8/Espressif+Systems/view-part/?ref=eda) | - |
-| PFMF.050.1 | ESP32C6_VARISTORCN1812 | - | - |
-| D2 | ESP32_WROVER_AVX---SD0805S020S1R0 | - | [Datasheet](http://datasheets.avx.com/schottky.pdf) |
-| MCP73831 | ESP32_WROVER_SPARKFUN-IC-POWER_MCP73831 | - | - |
-| J1 | FH34SRJ-24S-0.5SH_99_ | - | - |
-| U4 | MAX17048G+T10 | [Link](https://www.snapeda.com/parts/MAX17048G+T10/Analog+Devices/view-part/?ref=eda) | - |
-| D3, D4, D5 | MBR0530 | [Link](https://www.snapeda.com/parts/MBR0530/Onsemi/view-part/?ref=eda) | - |
-| D6, D8, D9, D10, D11, D12 | PGB1010603MR | [Link](https://www.snapeda.com/parts/PGB1010603MR/Littelfuse/view-part/?ref=eda) | - |
+|R1, R2 .. | ESP32_WROVER_EAGLE-LTSPICE_RR0402 |https://componentsearchengine.com/part-view/R0402%201%25%20100%20K%20                   | https://componentsearchengine.com/part-view/R0402%201%25%20100%20K%20      |
+| L1 | 744043680IND_4828-WE-TPC_WRE |  https://eu.mouser.com/ProductDetail/Wurth-Elektronik/744043680?qs=PGXP4M47uW6VkZq%252BkzjrHA%3D%3D               | https://eu.mouser.com/ProductDetail/Wurth-Elektronik/744043680?qs=PGXP4M47uW6VkZq%252BkzjrHA%3D%3D               |
+| IC1 | BD5229G-TR |https://componentsearchengine.com/part-view/BD5229G-TR/ROHM%20Semiconductor                                    | https://componentsearchengine.com/part-view/BD5229G-TR/ROHM%20Semiconductor                                    |
+| SENSOR2 | ESP32_WROVER_BME680_BME680 | https://www.snapeda.com/parts/BME680/Bosch/view-part/?welcome=home                                            | https://www.snapeda.com/parts/BME680/Bosch/view-part/?welcome=home                                            |
+| SJ1              | SJ                                           | https://grabcad.com/library/solder-jumpers-1                                                                   | https://grabcad.com/library/solder-jumpers-1                                                                   |
+| BOOT_BUTTON, CHANGE_BUTTON, RESET_BUTTON | BUTTON_CUSYOMV1 | https://industry.panasonic.com/global/en/products/control/switch/light-touch/number/evqpuj02k                  | https://industry.panasonic.com/global/en/products/control/switch/light-touch/number/evqpuj02k                  |
+| C1, C2 .. | CPH3225A | https://www.snapeda.com/parts/CPH3225A/Seiko+Instruments/view-part/?ref=eda | - |
+| U3 | DS3231SN# | https://www.snapeda.com/parts/DS3231SN%23/Analog+Devices/view-part/?ref=eda | [Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/ds3231.pdf) |
+| U2 | ESP32-C6-WROOM-1-N8 | https://www.snapeda.com/parts/ESP32-C6-WROOM-1-N8/Espressif+Systems/view-part/?ref=eda | - |
+| PFMF.050.1 | ESP32C6_VARISTORCN1812| https://www.mouser.co.uk/ProductDetail/EPCOS-TDK/B72520T0350K062?qs=dEfas%2FXlABIszF52uu7vrg%3D%3D              | https://www.mouser.co.uk/ProductDetail/EPCOS-TDK/B72520T0350K062?qs=dEfas%2FXlABIszF52uu7vrg%3D%3D              |
+| D2 | ESP32_WROVER_AVX---SD0805S020S1R0 | https://eu.mouser.com/ProductDetail/KYOCERA-AVX/SD0805S020S1R0?qs=jCA%252BPfw4LHbpkAoSnwrdjw%3D%3D              | http://datasheets.avx.com/schottky.pdf                                                                         |
+| MCP73831 | ESP32_WROVER_SPARKFUN-IC-POWER_MCP73831 |  https://eu.mouser.com/ProductDetail/Microchip-Technology/MCP73831T-2ACI-OT?qs=yUQqVecv4qvbBQBGbHx0Mw%3D%3Dcf   |
+| J1 | FH34SRJ-24S-0.5SH_99_ | https://componentsearchengine.com/part-view/XC6220A331MR-G/Torex                                              | https://componentsearchengine.com/part-view/XC6220A331MR-G/Torex                                              |
+| U4 | MAX17048G+T10 | https://www.snapeda.com/parts/MAX17048G+T10/Analog+Devices/view-part/?ref=eda | - |
+| D3, D4, D5 | MBR0530 | https://www.snapeda.com/parts/MBR0530/Onsemi/view-part/?ref=eda | - |
+| D6, D8, D9, D10, D11, D12 | PGB1010603MR | https://www.snapeda.com/parts/PGB1010603MR/Littelfuse/view-part/?ref=eda | - |
 | J3 | QWIIC_CONNECTORJS-1MM | - | - |
-| J2 | SAMACSYS_PARTS_USB4110-GF-A |[Link](https://www.mouser.com/ProductDetail/GCT/USB4110-GF-A) | [Datasheet](https://gct.co/files/drawings/usb4110.pdf) |
+| J2 | SAMACSYS_PARTS_USB4110-GF-A |https://www.mouser.com/ProductDetail/GCT/USB4110-GF-A | https://gct.co/files/drawings/usb4110.pdf |
 | D7 | ESP32_WROVER_AVX---SD0805S020S1R0 | - | [Datasheet](http://datasheets.avx.com/schottky.pdf) |
-| BOOT_BUTTON | EVQPUJ02K | [Link](https://www.mouser.com/ProductDetail/Panasonic/EVQPUJ02K) | [Datasheet](https://na.industrial.panasonic.com/file-download/21900) |
-| Q3 | SI1308EDL-T1-GE3 | [Link](https://www.snapeda.com/parts/SI1308EDL-T1-GE3/Vishay+Siliconix/view-part/?ref=eda) | - |
+| BOOT_BUTTON | EVQPUJ02K | https://www.mouser.com/ProductDetail/Panasonic/EVQPUJ02K | [Datasheet](https://na.industrial.panasonic.com/file-download/21900) |
+| Q3 | SI1308EDL-T1-GE3 | https://componentsearchengine.com/part-view/SI1308EDL-T1-GE3/Vishay                                           | https://componentsearchengine.com/part-view/SI1308EDL-T1-GE3/Vishay                                           |
 | TP1, TP2, ..., TP17 | TPTP20R | - | - |
-| D1 | USBLC6-2SC6Y | [Link](https://www.snapeda.com/parts/USBLC6-2SC6Y/STMicroelectronics/view-part/?ref=eda) | - |
-| U1 | W25Q512JVEIQ | [Link](https://www.snapeda.com/parts/W25Q512JVEIQ/Winbond+Electronics/view-part/?ref=eda) | - |
-| U4 | MAX17048G+T10 | [Link](https://www.mouser.com/ProductDetail/Analog-Devices/MAX17048G-T10) | [Datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX17048-MAX17049.pdf) |
-| C3 | 100uF TANT (F910J107MBAAJ6) | [Link](https://www.mouser.com/ProductDetail/AVX/F910J107MBAAJ6) | [Datasheet](https://datasheets.avx.com/F91.pdf) |
-| IC4 | XC6220A331MR-G | [Link](https://www.mouser.com/ProductDetail/Torex-Semiconductor/XC6220A331MR-G) | [Datasheet](https://www.torexsemi.com/file/xc6220/XC6220.pdf) |
+| D1 | USBLC6-2SC6Y |  https://www.snapeda.com/parts/USBLC6-2SC6Y/STMicroelectronics/view-part/?ref=eda                              | https://www.snapeda.com/parts/USBLC6-2SC6Y/STMicroelectronics/view-part/?ref=eda                              |
+| U1 | W25Q512JVEIQ | https://www.snapeda.com/parts/W25Q512JVEIQ/Winbond+Electronics/view-part/?ref=eda | - |
+| IC4 | XC6220A331MR-G | https://www.mouser.com/ProductDetail/Torex-Semiconductor/XC6220A331MR-G) | https://www.torexsemi.com/file/xc6220/XC6220.pdf |
 
 
 
